@@ -13,7 +13,7 @@ using Spring2020InternProject2Nick.ViewModels;
 
 namespace Spring2020InternProject2Nick.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -44,9 +44,11 @@ namespace Spring2020InternProject2Nick.Controllers
 
         //POST: api/Login
        [HttpPost]
-        public void Post([FromBody] LoginViewModel model)
+        public ActionResult<ResponseStatusViewModel> Post([FromBody] LoginRequestViewModel model)
         {
-            var blah = model;
+            if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
+                return new UnauthorizedObjectResult(new ResponseStatusViewModel { Result = false });
+            return new OkObjectResult(new ResponseStatusViewModel { Result = true }); ;
         }
 
         //// PUT: api/Authentication/5

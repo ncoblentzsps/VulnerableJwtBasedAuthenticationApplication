@@ -11,7 +11,7 @@ namespace Spring2020InternProject2Nick.Models
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         { }
-
+        
         public DbSet<HRUser> HRUsers { get; set; }
     }
 }

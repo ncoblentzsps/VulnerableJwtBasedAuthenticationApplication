@@ -52,11 +52,10 @@ namespace Spring2020InternProject2Nick
                 //options.ClaimsIdentity
                 //options.Stores
             }).AddEntityFrameworkStores<ApplicationDbContext>();
-            
-            
+                        
 
             services.AddControllersWithViews();
-            services.AddScoped<IHRServices,HRServices>();            
+            services.AddScoped<IHRServices,HRServices>();
             
             
         }
@@ -80,7 +79,7 @@ namespace Spring2020InternProject2Nick
             app.UseRouting();
 
             app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseAuthorization();            
 
             app.UseEndpoints(endpoints =>
             {
