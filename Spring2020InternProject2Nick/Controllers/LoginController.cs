@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Spring2020InternProject2Nick.Models;
 using Spring2020InternProject2Nick.Repositories;
 using Spring2020InternProject2Nick.ViewModels;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Spring2020InternProject2Nick.Controllers
 {
@@ -43,12 +44,34 @@ namespace Spring2020InternProject2Nick.Controllers
         //}
 
         //POST: api/Login
-       [HttpPost]
-        public ActionResult<ResponseStatusViewModel> Post([FromBody] LoginRequestViewModel model)
+
+        private static string _LoginFailureMessage = "Login Failed.";
+
+        [HttpPost]
+        public async Task<ActionResult<ResponseStatusViewModel>> Post([FromBody] LoginRequestViewModel model)
         {
+            ResponseStatusViewModel responseModel = new ResponseStatusViewModel();
             if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
-                return new UnauthorizedObjectResult(new ResponseStatusViewModel { Result = false });
-            return new OkObjectResult(new ResponseStatusViewModel { Result = true }); ;
+            {
+                responseModel.Result = false;
+                responseModel.Messages.Add(_LoginFailureMessage);
+                return new UnauthorizedObjectResult(responseModel);
+            }
+
+            HRUser user = await _userManager.FindByNameAsync(model.Username);
+            if (user != null)
+            {
+                SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user,false);
+                    return new OkObjectResult(new ResponseStatusViewModel { Result = true });
+                }
+            }
+
+            responseModel.Result = false;
+            responseModel.Messages.Add(_LoginFailureMessage);
+            return new UnauthorizedObjectResult(responseModel);
         }
 
         //// PUT: api/Authentication/5

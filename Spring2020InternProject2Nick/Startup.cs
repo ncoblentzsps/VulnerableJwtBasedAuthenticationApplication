@@ -14,6 +14,8 @@ using Microsoft.Extensions.Options;
 using Spring2020InternProject2Nick.Models;
 using Spring2020InternProject2Nick.Repositories;
 
+
+
 namespace Spring2020InternProject2Nick
 {
     public class Startup
@@ -32,7 +34,8 @@ namespace Spring2020InternProject2Nick
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlite("Data Source=sqlite.db");
-            });
+            });            
+            
             services.AddIdentity<HRUser,IdentityRole>(options => {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.SignIn.RequireConfirmedEmail = false;
