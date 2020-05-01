@@ -39,7 +39,7 @@ namespace Spring2020InternProject2Nick.Controllers
             _configuration = configration;
         }
         
-        [HttpPost]
+        [HttpPost]        
         public async Task<ActionResult<string>> Post([FromBody] LoginRequestViewModel model)
         {
             ResponseStatusViewModel responseModel = new ResponseStatusViewModel();
@@ -66,7 +66,7 @@ namespace Spring2020InternProject2Nick.Controllers
                             new Claim(ClaimTypes.Name, user.Id.ToString())
                         }),
                         Expires = DateTime.UtcNow.AddDays(7),
-                        SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
+                        SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),                        
                     };
                     SecurityToken securityToken = handler.CreateToken(tokenDescriptor);
                     string token = handler.WriteToken(securityToken);
@@ -78,6 +78,5 @@ namespace Spring2020InternProject2Nick.Controllers
             responseModel.Messages.Add(_LoginFailureMessage);
             return new UnauthorizedObjectResult(responseModel);
         }
-
     }
 }

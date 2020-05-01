@@ -66,13 +66,14 @@ namespace Spring2020InternProject2Nick
             }).AddJwtBearer(bearer =>
             {
                 bearer.RequireHttpsMetadata = false;
-                bearer.SaveToken = true;
+                bearer.SaveToken = true;                
                 bearer.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtKey"])),
                     ValidateIssuer = false,
                     ValidateAudience = false
+                    
 
                 };
             });
@@ -109,9 +110,9 @@ namespace Spring2020InternProject2Nick
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //endpoints.MapControllerRoute(
-                //    name: "default",
-                //    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
