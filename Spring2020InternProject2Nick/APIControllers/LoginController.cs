@@ -40,13 +40,12 @@ namespace Spring2020InternProject2Nick.Controllers
         }
         
         [HttpPost]        
-        public async Task<ActionResult<string>> Post([FromBody] LoginRequestViewModel model)
+        public async Task<ActionResult<LoginResponseViewModel>> Post([FromBody] LoginRequestViewModel model)
         {
-            ResponseStatusViewModel responseModel = new ResponseStatusViewModel();
+            LoginResponseViewModel responseModel = new LoginResponseViewModel();
+            responseModel.Token = "";
             if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
-            {
-                responseModel.Result = false;
-                responseModel.Messages.Add(_LoginFailureMessage);
+            {                
                 return new UnauthorizedObjectResult(responseModel);
             }
 
@@ -69,14 +68,16 @@ namespace Spring2020InternProject2Nick.Controllers
                         SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),                        
                     };
                     SecurityToken securityToken = handler.CreateToken(tokenDescriptor);
-                    string token = handler.WriteToken(securityToken);
-                    return new OkObjectResult(token);
+                    responseModel.Token = handler.WriteToken(securityToken);                    
+                    return new OkObjectResult(responseModel);
                 }
-            }
-
-            responseModel.Result = false;
-            responseModel.Messages.Add(_LoginFailureMessage);
+            }            
             return new UnauthorizedObjectResult(responseModel);
         }
+    }
+
+    public class LoginResponseViewModel
+    {
+        public string Token { get; set; }
     }
 }
