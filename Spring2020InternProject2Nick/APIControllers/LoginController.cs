@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -12,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+
 using Spring2020InternProject2Nick.Models;
 using Spring2020InternProject2Nick.Repositories;
 using Spring2020InternProject2Nick.ViewModels;
@@ -27,7 +25,7 @@ namespace Spring2020InternProject2Nick.Controllers
         private SignInManager<HRUser> _signInManager;
         private UserManager<HRUser> _userManager;
         private IHRServices _hrServices;
-        private IConfiguration _configuration;
+        private IConfiguration _configuration;        
 
         private static string _LoginFailureMessage = "Login Failed.";
 
@@ -36,17 +34,15 @@ namespace Spring2020InternProject2Nick.Controllers
             _signInManager = signInManager;
             _userManager = userManager;
             _hrServices = hrServices;
-            _configuration = configration;
+            _configuration = configration;            
         }
         
         [HttpPost]        
-        public async Task<ActionResult<LoginResponseViewModel>> Post([FromBody] LoginRequestViewModel model)
-        {
-            LoginResponseViewModel responseModel = new LoginResponseViewModel();
-            responseModel.Token = "";
+        public async Task<ActionResult> Post([FromBody] LoginRequestViewModel model)
+        {                        
             if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
             {                
-                return new UnauthorizedObjectResult(responseModel);
+                return new UnauthorizedResult();
             }
 
             HRUser user = await _userManager.FindByNameAsync(model.Username);
@@ -56,28 +52,14 @@ namespace Spring2020InternProject2Nick.Controllers
                 if (result.Succeeded)
                 {
                     //await _signInManager.SignInAsync(user,false);
-                    JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();                    
-                    SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JwtKey"]));
-                    SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
-                    {
-                        Subject = new ClaimsIdentity(new Claim[]
-                        {
-                            new Claim(ClaimTypes.Name, user.Id.ToString())
-                        }),
-                        Expires = DateTime.UtcNow.AddDays(7),
-                        SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),                        
-                    };
-                    SecurityToken securityToken = handler.CreateToken(tokenDescriptor);
-                    responseModel.Token = handler.WriteToken(securityToken);                    
-                    return new OkObjectResult(responseModel);
+                    
+                    await _hrServices.SendTwoFactorCodeAsync(user);
+                    return new OkResult();
                 }
             }            
-            return new UnauthorizedObjectResult(responseModel);
+            return new UnauthorizedResult();
         }
     }
 
-    public class LoginResponseViewModel
-    {
-        public string Token { get; set; }
-    }
+
 }

@@ -10,5 +10,8 @@ namespace Spring2020InternProject2Nick.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public string TwoFactorCode { get; set; }
+        public DateTime TwoFactorCodeDateTime { get; set; }
     }
 }

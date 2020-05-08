@@ -63,7 +63,8 @@ namespace Spring2020InternProject2Nick.Controllers
                 Email = model.Email,
                 UserName = model.Username,
                 FirstName = model.FirstName,
-                LastName = model.LastName                
+                LastName = model.LastName,
+                TwoFactorEnabled = true
             };
             IdentityResult result = await _userManager.CreateAsync(hruser, model.Password);
             if(result.Succeeded)

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,9 +80,11 @@ namespace Spring2020InternProject2Nick
             });
 
             services.AddControllersWithViews();
-            services.AddScoped<IHRServices,HRServices>();
             services.AddSingleton<IConfiguration>(Configuration);
-
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IHRServices,HRServices>();
+            
+            
 
 
         }
