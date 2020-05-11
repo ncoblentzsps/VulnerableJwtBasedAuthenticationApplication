@@ -27,21 +27,25 @@ async function isLoggedIn() {
     var jwt = sessionStorage.getItem('jwt');
     if (jwt != null && jwt !== '') {
         myFetch('/api/v1/Internal', 'GET', true)
-            .then(response => setLoggedIn(response.ok))
-            .catch(exception => setLoggedIn(false));
+            .then(response => { setLoggedIn(response.ok); showHideBasedOnLogin() })
+            .catch(exception => { setLoggedIn(false); showHideBasedOnLogin() });
     }
-    showHideBasedOnLogin();
+    else {
+        setLoggedIn(false);
+        showHideBasedOnLogin();
+    }
+    
 }
 
 
 function showHideBasedOnLogin() {
     if (loggedIn) {
-        document.querySelectorAll(".hide-loggedin").forEach(box => { box.style.display = 'none' });
-        document.querySelectorAll(".show-loggedin").forEach(box => { box.style.display = '' });
+        document.querySelectorAll(".hide-loggedin").forEach(box => { box.classList.add('d-none') });
+        document.querySelectorAll(".show-loggedin").forEach(box => { box.classList.remove('d-none') });
     }
     else {
-        document.querySelectorAll(".hide-loggedin").forEach(box => { box.style.display = '' });
-        document.querySelectorAll(".show-loggedin").forEach(box => { box.style.display = 'none' });
+        document.querySelectorAll(".hide-loggedin").forEach(box => { box.classList.remove('d-none') });
+        document.querySelectorAll(".show-loggedin").forEach(box => { box.classList.add('d-none') });
     }
 }
 
@@ -69,21 +73,54 @@ document.getElementById("loginButton").addEventListener("click", e =>
     data = { 'username': username, 'password': password };
     myFetch('/api/v1/Login', 'POST', false,data)
         .then(response => {
-            if (response.ok) {
-                return response.json();
+            if (!response.ok) {
+                throw new Error(response.status);
+                //return response.json();
             }
-            throw new Error(response.status);
-
-        })
+            })
         .then(data => {
-            sessionStorage.setItem('jwt', data.token);            
+            //sessionStorage.setItem('jwt', data.token);            
             //document.location.href = '/';
-            isLoggedIn();
-            $('#modalLogin').modal('hide');
+            //isLoggedIn();
+            //$('#modalLogin').modal('hide');
+            document.getElementById('loginButton').classList.add('d-none');
+            document.getElementById('confirmTwoFactorButton').classList.remove('d-none');            
+            document.getElementById('loginUsernamePasswordContainer').classList.add('d-none');
+            document.getElementById('loginTwoFactorFormGroup').classList.remove('d-none');                        
         })
         .catch(error => {
             console.log(error);
             document.getElementById('loginStatus').innerText = "Login Failed";            
+        });    
+});
+
+document.getElementById("confirmTwoFactorButton").addEventListener("click", e => {
+    document.getElementById('loginStatus').innerText = "";
+    var username = document.getElementById("loginUsername").value;
+    var password = document.getElementById("loginPassword").value;
+    var code = document.getElementById('loginTwoFactorValue').value;
+    data = { 'username': username, 'password': password, 'SecondFactorValue':code };
+    myFetch('/api/v1/SecondFactor', 'POST', false, data)
+        .then(response => {
+            if (response.ok) {
+                
+                return response.json();
+            }
+            else
+                throw new Error(response.status);
+        })
+        .then(data => {
+            sessionStorage.setItem('jwt', data.token);            
+            document.location.href = '/';
+            isLoggedIn();
+            //$('#modalLogin').modal('hide');
+            //document.getElementById('loginButton').classList.remove('d-none');
+            //document.getElementById('confirmTwoFactorButton').classList.add('d-none');
+            //document.getElementById('loginUsernamePasswordContainer').classList.remove('d-none');
+            //document.getElementById('loginTwoFactorFormGroup').classList.add('d-none');
+        })
+        .catch(error => {
+            console.log(error);
+            document.getElementById('loginStatus').innerText = "Login Failed";
         });
-    
 });
