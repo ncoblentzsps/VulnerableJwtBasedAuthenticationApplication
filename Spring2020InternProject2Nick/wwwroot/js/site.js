@@ -73,6 +73,14 @@ ready(() => {
 
 
 
+
+
+document.getElementById("signout").addEventListener("click", e => {    
+    sessionStorage.removeItem('jwt');
+    document.location.href = '/';
+    
+});
+
 document.getElementById("loginButton").addEventListener("click", e =>
 {
     document.getElementById('loginStatus').innerText = "";    
