@@ -22,6 +22,14 @@ function myFetch(url, method, authenticated, data = {})
     return fetch(url, requestInfo);
 }
 
+function enableLoginSpinner(on)
+{
+    var loginSpinner = document.getElementById('loginSpinner');
+    if (on)
+        loginSpinner.classList.remove('d-none');
+    else
+        loginSpinner.classList.add('d-none');
+}
 
 async function isLoggedIn() {    
     var jwt = sessionStorage.getItem('jwt');
@@ -67,7 +75,8 @@ ready(() => {
 
 document.getElementById("loginButton").addEventListener("click", e =>
 {
-    document.getElementById('loginStatus').innerText = "";
+    document.getElementById('loginStatus').innerText = "";    
+    enableLoginSpinner(true);
     var username = document.getElementById("loginUsername").value;
     var password = document.getElementById("loginPassword").value;
     data = { 'username': username, 'password': password };
@@ -87,15 +96,18 @@ document.getElementById("loginButton").addEventListener("click", e =>
             document.getElementById('confirmTwoFactorButton').classList.remove('d-none');            
             document.getElementById('loginUsernamePasswordContainer').classList.add('d-none');
             document.getElementById('loginTwoFactorFormGroup').classList.remove('d-none');                        
+            enableLoginSpinner(false);
         })
         .catch(error => {
             console.log(error);
             document.getElementById('loginStatus').innerText = "Login Failed";            
+            enableLoginSpinner(false);
         });    
 });
 
 document.getElementById("confirmTwoFactorButton").addEventListener("click", e => {
     document.getElementById('loginStatus').innerText = "";
+    enableLoginSpinner(true);
     var username = document.getElementById("loginUsername").value;
     var password = document.getElementById("loginPassword").value;
     var code = document.getElementById('loginTwoFactorValue').value;
@@ -107,6 +119,7 @@ document.getElementById("confirmTwoFactorButton").addEventListener("click", e =>
                 return response.json();
             }
             else
+                enableLoginSpinner(false);
                 throw new Error(response.status);
         })
         .then(data => {
@@ -118,9 +131,11 @@ document.getElementById("confirmTwoFactorButton").addEventListener("click", e =>
             //document.getElementById('confirmTwoFactorButton').classList.add('d-none');
             //document.getElementById('loginUsernamePasswordContainer').classList.remove('d-none');
             //document.getElementById('loginTwoFactorFormGroup').classList.add('d-none');
+            enableLoginSpinner(false);
         })
         .catch(error => {
             console.log(error);
             document.getElementById('loginStatus').innerText = "Login Failed";
+            enableLoginSpinner(false);
         });
 });
