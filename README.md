@@ -1,4 +1,5 @@
 # Vulnerable Jwt Based Authentication Application
+This is an example vulnerable authentication application created to support Security PS's Cyber Apprenticeship Program.
 ## Running the Code
 1. Install ASP.NET Core 3.1 SDK
 1. Open a terminal and cd into the project's working directory
