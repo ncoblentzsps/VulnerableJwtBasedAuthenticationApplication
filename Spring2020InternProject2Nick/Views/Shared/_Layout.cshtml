@@ -32,9 +32,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Authentication" asp-action="Register">Privacy</a>
                         </li>
-                        <li class="nav-item">                            
-                                <a id="signout" href="#" class="nav-link text-dark show-loggedin" >Sign Out</a>                            
-                                <a id="login" href="#" class="nav-link text-dark hide-loggedin" data-toggle="modal" data-target="#modalLogin">Log In</a>                            
+                        <li class="nav-item">
+                            <a id="register" asp-controller="Home" asp-action="Register" class="nav-link text-dark hide-loggedin">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="login" href="#" class="nav-link text-dark hide-loggedin" data-toggle="modal" data-target="#modalLogin">Log In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="signout" href="#" class="nav-link text-dark show-loggedin">Sign Out</a>
                         </li>
                     </ul>
                 </div>
@@ -76,9 +81,9 @@
                         <label for="TwoFactorValue">Enter the six digit code from your email:</label>
                         <input type="password" class="form-control" placeholder="Enter your code" id="loginTwoFactorValue" />
                     </div>
-                    <button id="loginButton" type="submit" class="btn btn-primary">Log In</button>
-                    <button class="d-none btn-primary btn" id="confirmTwoFactorButton" type="submit">Verify SMS Code</button>
                     <div id="loginSpinner" class="spinner-border text-primary d-none"></div>
+                    <button id="loginButton" type="submit" class="btn btn-primary">Log In</button>
+                    <button class="d-none btn-primary btn" id="confirmTwoFactorButton" type="submit">Verify SMS Code</button>                    
                 </div>
             </div>
         </div>

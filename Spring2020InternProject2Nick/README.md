@@ -10,7 +10,5 @@
     1. run ```dotnet user-secrets set "Email:From" "<your email address here, ex: myusername@gmail.com"```
 1. run ```dotnet run```
 1. Open a browser and visit https://127.0.0.1:50001
-1. Register a user account
+1. Register a user account (not yet implemented in the UI)
 1. Login with a username and password
-1. Check your email for an SMS one-time token
-1. Enter your SMS one-time token
