@@ -49,7 +49,14 @@ namespace Spring2020InternProject2Nick.Controllers
                 if (result.Succeeded)
                 {
                     if(_hrServices.ValidateTwoFactorCodeAsync(user, model.SecondFactorValue))
-                    {                        
+                    {
+                        IList<string> roles = await _userManager.GetRolesAsync(user);
+                        string role="";
+                        if (roles.Contains("Admin"))
+                            role = "Admin";
+                        else if (roles.Contains("User"))
+                            role = "User";
+
                         JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
                         SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JwtKey"]));
                         SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
@@ -57,7 +64,7 @@ namespace Spring2020InternProject2Nick.Controllers
                             Subject = new ClaimsIdentity(new Claim[]
                             {
                                 new Claim(ClaimTypes.Name, user.Id.ToString()),
-                                new Claim(ClaimTypes.Role,"User")
+                                new Claim(ClaimTypes.Role,role)
                             }),
                             Expires = DateTime.UtcNow.AddDays(7),
                             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),

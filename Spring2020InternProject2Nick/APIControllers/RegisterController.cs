@@ -18,11 +18,13 @@ namespace Spring2020InternProject2Nick.Controllers
         private SignInManager<HRUser> _signInManager;
         private UserManager<HRUser> _userManager;
         private IHRServices _hrServices;
-        public RegisterController(SignInManager<HRUser> signInManager, UserManager<HRUser> userManager, IHRServices hrServices)
+        private RoleManager<IdentityRole> _roleManager;
+        public RegisterController(SignInManager<HRUser> signInManager, UserManager<HRUser> userManager, IHRServices hrServices, RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _hrServices = hrServices;
+            _roleManager = roleManager;
         }
 
         [HttpPut]
@@ -69,6 +71,12 @@ namespace Spring2020InternProject2Nick.Controllers
             IdentityResult result = await _userManager.CreateAsync(hruser, model.Password);
             if(result.Succeeded)
             {
+                IdentityRole userRole = _roleManager.Roles.FirstOrDefault(r => r.Name == "User");
+                if(userRole==null)
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("User"));
+                }
+                await _userManager.AddToRoleAsync(hruser, userRole.Name);
                 responseModel.Result = true;
                 responseModel.Messages.Add("Thank you for registering your account.");
                 return new OkObjectResult(responseModel);
