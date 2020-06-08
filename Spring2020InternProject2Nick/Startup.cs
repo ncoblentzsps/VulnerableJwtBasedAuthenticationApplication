@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,16 +67,17 @@ namespace Spring2020InternProject2Nick
                 auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(bearer =>
             {
-                bearer.RequireHttpsMetadata = false;
-                bearer.SaveToken = true;                
+                bearer.RequireHttpsMetadata = false;                
+                bearer.SaveToken = true;
                 bearer.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtKey"])),
+                    ValidateIssuerSigningKey = false,
+                    //IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtKey"])),
                     ValidateIssuer = false,
-                    ValidateAudience = false
-                    
-
+                    ValidateAudience = false,
+                    RequireSignedTokens = false,
+                    ValidateActor = false,
+                    SignatureValidator = delegate (string token, TokenValidationParameters validationParameters) { return new JwtSecurityToken(token); }
                 };
             });
 

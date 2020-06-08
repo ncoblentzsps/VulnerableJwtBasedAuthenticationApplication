@@ -24,12 +24,14 @@ namespace Spring2020InternProject2Nick.Controllers
         private SignInManager<HRUser> _signInManager;
         private UserManager<HRUser> _userManager;
         private IHRServices _hrServices;
-        public SecondFactorController(IConfiguration configuration, IHRServices hrServices, SignInManager<HRUser> signInManager, UserManager<HRUser> userManager)
+        private RoleManager<IdentityRole> _roleManager;
+        public SecondFactorController(IConfiguration configuration, IHRServices hrServices, SignInManager<HRUser> signInManager, UserManager<HRUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _configuration = configuration;            
             _signInManager = signInManager;
             _userManager = userManager;
             _hrServices = hrServices;
+            _roleManager = roleManager;
     }
 
         [HttpPost]
@@ -47,14 +49,15 @@ namespace Spring2020InternProject2Nick.Controllers
                 if (result.Succeeded)
                 {
                     if(_hrServices.ValidateTwoFactorCodeAsync(user, model.SecondFactorValue))
-                    {
+                    {                        
                         JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
                         SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JwtKey"]));
                         SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
                         {
                             Subject = new ClaimsIdentity(new Claim[]
                             {
-                            new Claim(ClaimTypes.Name, user.Id.ToString())
+                                new Claim(ClaimTypes.Name, user.Id.ToString()),
+                                new Claim(ClaimTypes.Role,"User")
                             }),
                             Expires = DateTime.UtcNow.AddDays(7),
                             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),

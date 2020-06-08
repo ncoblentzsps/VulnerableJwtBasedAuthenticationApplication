@@ -13,6 +13,7 @@ namespace Spring2020InternProject2Nick.Controllers
     [Authorize]
     public class InternalController : ControllerBase
     {
+        [Authorize(Roles="Admin,User")]
         public ActionResult Get()
         {
             string name = this.HttpContext.User.Identity.Name;
